@@ -36,7 +36,7 @@ def VGG_16(num_classes, input_shape):
     from tensorflow.keras.optimizers import SGD
 
     model = Sequential()
-    model.add(ZeroPadding2D((1,1),input_shape=input_shape))
+    model.add(ZeroPadding2D((1,1)))
     model.add(Convolution2D(64, 3, 3, activation='relu'))
     model.add(ZeroPadding2D((1,1)))
     model.add(Convolution2D(64, 3, 3, activation='relu'))

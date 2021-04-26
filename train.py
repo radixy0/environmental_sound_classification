@@ -46,6 +46,8 @@ sample_shape=specs[0].shape
 input_shape=(len(specs), sample_shape[0], sample_shape[1], 1)
 specs=specs.reshape(input_shape)
 
+input_shape = (len(specs), specs[0].shape[0], specs[0].shape[1], 1)
+
 #get model
 model=model_architecture.getModel(2,len(class_names), input_shape)
 
