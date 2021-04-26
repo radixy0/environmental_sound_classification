@@ -25,7 +25,7 @@ def processAudioFile(classname: str, wavfile: str, augment: bool):
     y, sr = librosa.load(absolutepath)
     audio=[]
     if(augment):
-        audio=utils.compteAug(y,sr)
+        audio=utils.computeAug(y,sr)
     else:
         audio.append(utils.computeNormalize(y,sr))
 

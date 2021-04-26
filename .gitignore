@@ -9,6 +9,9 @@ data2/
 validation/
 validation_spec/
 
+#PyCharm
+.idea/
+
 # C extensions
 *.so
 

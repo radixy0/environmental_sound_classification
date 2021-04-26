@@ -108,7 +108,7 @@ def computeAug(data, sr):
     normalized_data=norm.augment(data)
     result.append(normalized_data)
     augmented_data=aug.augment(data, 2)
-    result.append(augmented_data)
+    result.extend(augmented_data)
     return result
 
 def computeSpectrogram(wavfile, frompath, topath):
@@ -179,7 +179,7 @@ def getModelFolder():
 def getValidationAugFolder():
     if not os.path.exists(validateAugFolder):
         os.makedirs(validateAugFolder)
-    return tempfolder
+    return validateAugFolder
 
 def getValidationSplitFolder():
     if not os.path.exists(validateSplitFolder):
@@ -194,10 +194,6 @@ def getValidationSpectrogramFolder():
 
 def getModelList():
     return os.listdir(getModelFolder())
-
-def cleanTempFolder():
-    removeFolderWithProgress(tempfolder)
-    removeFolderWithProgress(tempfolder2)
 
 def silenceTensorflow(level: int):
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = str(level)  # or any {'0', '1', '2'}

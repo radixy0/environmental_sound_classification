@@ -33,10 +33,12 @@ for index, classname in enumerate(class_names):
     for spectrogram in tqdm(utils.getNpyListFromFolder(foldername)):
         abspath=foldername.joinpath(spectrogram+".npy")
         spec=np.load(abspath)
-        specs.append(spec)
-        labels.append(index)
+        if(spec.shape[1]==216):
+            specs.append(spec)
+            labels.append(index)
 
-specs=np.asarray(specs)
+
+specs=np.asarray(specs, dtype=object)
 labels=np.asarray(labels)
 
 #reshape
@@ -45,7 +47,7 @@ input_shape=(len(specs), sample_shape[0], sample_shape[1], 1)
 specs=specs.reshape(input_shape)
 
 #get model
-model=model_architecture.getModel(len(class_names), input_shape)
+model=model_architecture.getModel(2,len(class_names), input_shape)
 
 #start training
 print("Training..")
