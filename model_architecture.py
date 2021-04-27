@@ -3,6 +3,8 @@ def getModel(id, num_classes, input_shape):
         return ownModel(num_classes, input_shape)
     elif(id==2):
         return VGG_16(num_classes, input_shape)
+    elif (id == 3):
+        return ownModel2(num_classes, input_shape)
 
 def ownModel(num_classes, input_shape):
     print("own model")
@@ -81,5 +83,23 @@ def VGG_16(num_classes, input_shape):
 
     sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
     model.compile(optimizer=sgd, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+    return model
+
+def ownModel2(num_classes, input_shape):
+    from tensorflow.keras.models import Sequential
+    from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
+    from tensorflow import keras
+
+    model = Sequential()
+    model.add(Conv2D(32, kernel_size=(3, 3), activation='relu'))
+    model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
+    model.add(Flatten())
+    model.add(Dense(128, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(num_classes, activation='softmax'))
+    model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.adam(), metrics=['accuracy'])
 
     return model
