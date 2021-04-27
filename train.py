@@ -1,13 +1,9 @@
-import glob
 import os
 
 import warnings
-from sys import platform
 import utils
-import joblib
 import numpy as np
 utils.silenceTensorflow(3)
-import tensorflow as tf
 
 from tqdm import tqdm
 import matplotlib.pyplot as plt
@@ -57,13 +53,13 @@ specs=specs.reshape(input_shape)
 input_shape = (len(specs), specs[0].shape[0], specs[0].shape[1], 1)
 
 #get model
-model=model_architecture.getModel(2,len(class_names), input_shape)
+model=model_architecture.getModel(1,len(class_names), input_shape)
 
 #start training
 print("Training..")
 history = model.fit(specs, labels,validation_split=0.1, epochs=25, shuffle=True)
-
-model.save(model_savefolder.joinpath("model.h5"), include_optimizer=True)
+model_filename="model.h5"
+model.save(model_savefolder.joinpath(model_filename), include_optimizer=True)
 
 print("\n\nAll done! Model saved to /data/model/"+model_filename)
 
