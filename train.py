@@ -31,9 +31,9 @@ if not (os.path.isfile("data/specs.npy")):
         for spectrogram in tqdm(utils.getNpyListFromFolder(foldername)):
             abspath=foldername.joinpath(spectrogram+".npy")
             spec=np.load(abspath)
-            if(spec.shape[1]==216):
-                specs.append(spec)
-                labels.append(index)
+            #if(spec.shape[1]==216):
+            specs.append(spec)
+            labels.append(index)
 
 
     specs=np.asarray(specs, dtype=object).astype('float32')
@@ -47,10 +47,8 @@ else:
 
 #reshape
 sample_shape=specs[0].shape
-input_shape=(len(specs), sample_shape[0], sample_shape[1], 1)
+input_shape=(len(specs), sample_shape[0], None, 1)
 specs=specs.reshape(input_shape)
-
-input_shape = (len(specs), specs[0].shape[0], specs[0].shape[1], 1)
 
 #get model
 model=model_architecture.getModel(1,len(class_names), input_shape)

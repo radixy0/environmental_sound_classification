@@ -17,6 +17,7 @@ def splitAudio(infolder: str, outfolder: str):
         jobs=[joblib.delayed(utils.computeSplitAudioFile)(wavfile, frompath, topath) for wavfile in utils.getWavListFromFolder(frompath)]
         out=joblib.Parallel(n_jobs=utils.USE_CORES, verbose=1)(jobs)
 
+
 audioFolder=utils.getAudioFolder()
 splitAudioFolder=utils.getSplitAudioFolder()
 classnames = utils.getClassList()
