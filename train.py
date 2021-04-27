@@ -10,6 +10,7 @@ utils.silenceTensorflow(3)
 import tensorflow as tf
 
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 import model_architecture
 
@@ -24,22 +25,29 @@ class_names=[]
 #get classes
 class_names = [f.name for f in os.scandir(datafolder) if f.is_dir()]
 
-print("Loading Data for Training..")
-#load data
-specs = []
-labels = []
-for index, classname in enumerate(class_names):
-    foldername = datafolder.joinpath(classname)
-    for spectrogram in tqdm(utils.getNpyListFromFolder(foldername)):
-        abspath=foldername.joinpath(spectrogram+".npy")
-        spec=np.load(abspath)
-        if(spec.shape[1]==216):
-            specs.append(spec)
-            labels.append(index)
+if not (os.path.isfile("data/specs.npy")):
+    print("Loading Data for Training..")
+    #load data
+    specs = []
+    labels = []
+    for index, classname in enumerate(class_names):
+        foldername = datafolder.joinpath(classname)
+        for spectrogram in tqdm(utils.getNpyListFromFolder(foldername)):
+            abspath=foldername.joinpath(spectrogram+".npy")
+            spec=np.load(abspath)
+            if(spec.shape[1]==216):
+                specs.append(spec)
+                labels.append(index)
 
 
-specs=np.asarray(specs, dtype=object)
-labels=np.asarray(labels)
+    specs=np.asarray(specs, dtype=object).astype('float32')
+    labels=np.asarray(labels)
+
+    np.save("data/specs.npy", specs)
+    np.save("data/labels.npy", labels)
+else:
+    specs = np.load("data/specs.npy")
+    labels = np.load("data/labels.npy")
 
 #reshape
 sample_shape=specs[0].shape
@@ -53,14 +61,25 @@ model=model_architecture.getModel(2,len(class_names), input_shape)
 
 #start training
 print("Training..")
-model.fit(specs, labels, epochs=250)
+history = model.fit(specs, labels,validation_split=0.1, epochs=25, shuffle=True)
 
-model_filename=input("Do you want to give the model a name? End the file with .h5 to use hdf5 format: ")
-if(model_filename==""): model_filename="model"
-
-if not (os.path.exists(model_savefolder)):
-            os.makedirs(model_savefolder)
-
-model.save(model_savefolder.joinpath(model_filename), include_optimizer=True)
+model.save(model_savefolder.joinpath("model.h5"), include_optimizer=True)
 
 print("\n\nAll done! Model saved to /data/model/"+model_filename)
+
+# summarize history for accuracy
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.savefig(model.savefolder.joinpath("accuracy.jpg"))
+# summarize history for loss
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.savefig(model.savefolder.joinpath("loss.jpg"))

@@ -9,3 +9,6 @@ zeitfenster spectrogram ändern
 lern test datenkurve
 datensatz menge angleichen
 zweiklassenproblem testen
+
+
+validation pipeline ordentlich machen

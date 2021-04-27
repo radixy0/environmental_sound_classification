@@ -23,7 +23,7 @@ model_savefolder=currDirectory.joinpath("model")
 validateFolder=currDirectory.joinpath("validation/audio")
 validateAugFolder=currDirectory.joinpath("validation/audio_augmented")
 validateSplitFolder=currDirectory.joinpath("validation/audio_split")
-validateSpectrograms=currDirectory.joinpath("validation/spectrograms")
+validateSpectrograms=currDirectory.joinpath("validation_spec")
 
 SPLIT_LENGTH=5 #in s
 USE_CORES=-1
