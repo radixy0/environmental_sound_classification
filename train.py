@@ -3,18 +3,15 @@ import numpy as np
 import model_architecture
 import matplotlib.pyplot as plt
 import utils
-import librosa
 from tqdm import tqdm
 from scipy.io import wavfile
-
-
 utils.silenceTensorflow(3)
 from tensorflow import keras
 
 audio_dir = "data/audio/"
 model_dir = utils.getModelFolder()
-imheight = 28
-imwidth = 128
+imheight = 50
+imwidth = 75
 num_classes = 10
 NFFT = 4096
 
@@ -104,7 +101,6 @@ def main():
 
     x_train = x_train.reshape(x_train.shape[0], imwidth, imheight, 1)
     y_train = keras.utils.to_categorical(y_train, num_classes)
-
     input_shape = (imwidth, imheight, 1)
     print("shape", x_train.shape)
     print("label shape: ", y_train.shape)
