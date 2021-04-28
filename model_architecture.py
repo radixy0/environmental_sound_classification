@@ -38,7 +38,7 @@ def VGG_16(num_classes, input_shape):
     from tensorflow.keras.optimizers import SGD
 
     model = Sequential()
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1,1), input_shape=input_shape))
     model.add(Convolution2D(64, (3, 3), activation='relu'))
     model.add(ZeroPadding2D((1,1)))
     model.add(Convolution2D(64, (3, 3), activation='relu'))
@@ -81,8 +81,8 @@ def VGG_16(num_classes, input_shape):
     model.add(Dropout(0.5))
     model.add(Dense(num_classes, activation='softmax'))
 
-    sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
-    model.compile(optimizer=sgd, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    sgd = SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True)
+    model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
     return model
 
