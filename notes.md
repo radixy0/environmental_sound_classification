@@ -12,5 +12,4 @@ datensatz menge angleichen
 zweiklassenproblem testen
 
 
-validation pipeline ordentlich machen
-check out urbansound8k
+größere spectrogram size

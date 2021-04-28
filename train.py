@@ -10,10 +10,11 @@ from tensorflow import keras
 
 audio_dir = "data/audio/"
 model_dir = utils.getModelFolder()
-imheight = 50
-imwidth = 75
+imwidth = 375
+imheight = 250
 num_classes = 10
-NFFT = 4096
+NFFT = 512
+
 
 def getSpectrogram(file, fig, ax):
     rate, stereodata = wavfile.read(file)
@@ -30,7 +31,7 @@ def getSpectrogram(file, fig, ax):
     ax.axis('off')
     pxx, freqs, bins, im = ax.specgram(x=data, Fs=rate, NFFT=NFFT, noverlap=256)#, noverlap=NFFT - 1)
     ax.axis('off')
-    plt.rcParams['figure.figsize'] = (0.75, 0.5)
+    plt.rcParams['figure.figsize'] = (3.75, 2.5)
     fig.canvas.draw()
     width, height = fig.get_size_inches() * fig.get_dpi()
     mplimage = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
@@ -86,6 +87,7 @@ def getTrainData():
             if (normgram.shape[0] > 150): continue
             x_train[i] = normgram
 
+        plt.close()
         np.save(x_path, x_train)
         np.save(y_path, y_train)
 
@@ -106,7 +108,7 @@ def main():
     print("label shape: ", y_train.shape)
 
     model = model_architecture.getModel(2, 10, input_shape)
-    history = model.fit(x_train, y_train, batch_size=64, epochs=25, validation_split=0.1, verbose=1)
+    history = model.fit(x_train, y_train, batch_size=4, epochs=25, validation_split=0.1, verbose=1)
 
     model_filename = "model.h5"
     model.save(model_dir.joinpath(model_filename), include_optimizer=True)
