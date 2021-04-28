@@ -10,13 +10,13 @@ from tensorflow import keras
 
 audio_dir = "data/audio/"
 model_dir = utils.getModelFolder()
-imwidth = 375
-imheight = 250
+imwidth = 75
+imheight = 50
 num_classes = 10
 NFFT = 512
 
 
-def getSpectrogram(file, fig, ax):
+def getSpectrogram(file):
     rate, stereodata = wavfile.read(file)
 
     # convert to mono
@@ -26,18 +26,21 @@ def getSpectrogram(file, fig, ax):
         data = stereodata
 
     plt.ioff()
-    #fig,ax = plt.subplots(1)
+    fig,ax = plt.subplots(1)
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     ax.axis('off')
     pxx, freqs, bins, im = ax.specgram(x=data, Fs=rate, NFFT=NFFT, noverlap=256)#, noverlap=NFFT - 1)
     ax.axis('off')
-    plt.rcParams['figure.figsize'] = (3.75, 2.5)
+    #plt.rcParams['figure.figsize'] = [0.75, 0.5]
+    fig.set_size_inches(0.75,0.5)
+    fig.set_dpi(100)
     fig.canvas.draw()
     width, height = fig.get_size_inches() * fig.get_dpi()
     mplimage = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
     imarray = np.reshape(mplimage, (int(width), int(height), 3))
-    plt.clf()
-    #plt.close()
+    #print(width, height)
+    #plt.clf()
+    plt.close()
     gray = np.dot(imarray[..., :3], [0.299, 0.587, 0.114])
     return gray
 
@@ -66,7 +69,7 @@ def getTrainData():
         file_list = [f for f in os.listdir(audio_dir) if '.wav' in f]
         file_list.sort()
 
-        x_train = np.zeros((len(file_list), imwidth, imheight))
+        x_train = np.zeros((len(file_list), imwidth, imheight), dtype=np.float64)
         y_train = np.zeros(len(file_list))
 
         print("preparing files..")
@@ -78,37 +81,37 @@ def getTrainData():
             y_train[i] = int(split[1])
             # get spectrogram
             try:
-                spectrogram = getSpectrogram(audio_dir + f, fig, ax)
+                spectrogram = getSpectrogram(audio_dir + f)
             except ValueError as e:
                 print("valueerror reading file: ", audio_dir + f)
                 continue
 
-            normgram = normalizeSpectrogram(spectrogram) / 255
-            if (normgram.shape[0] > 150): continue
+            normgram = normalizeSpectrogram(spectrogram)
             x_train[i] = normgram
 
         plt.close()
         np.save(x_path, x_train)
         np.save(y_path, y_train)
 
-        return x_train, y_train
-
     else:
         print("found saved files")
-        return np.load(x_path), np.load(y_path)
+        x_train = np.load(x_path)
+        y_train = np.load(y_path)
+
+    return x_train, y_train
 
 
 def main():
     x_train, y_train = getTrainData()
-
     x_train = x_train.reshape(x_train.shape[0], imwidth, imheight, 1)
     y_train = keras.utils.to_categorical(y_train, num_classes)
+
     input_shape = (imwidth, imheight, 1)
     print("shape", x_train.shape)
     print("label shape: ", y_train.shape)
-
+    print("test: ", x_train[333][20][21][0])
     model = model_architecture.getModel(2, 10, input_shape)
-    history = model.fit(x_train, y_train, batch_size=4, epochs=25, validation_split=0.1, verbose=1)
+    history = model.fit(x_train, y_train, epochs=250, validation_split=0.3, verbose=1)
 
     model_filename = "model.h5"
     model.save(model_dir.joinpath(model_filename), include_optimizer=True)
