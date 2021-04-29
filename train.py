@@ -155,8 +155,8 @@ def main():
     print("y val shape: ", y_val.shape)
     print("test: ", x_train[333][20][21][0]) # test random value to see if its in [0,1]
 
-    model = model_architecture.VGG16_Pretrained(10, input_shape)
-    sgd = SGD(lr=0.0005, decay=1e-6, momentum=0.9, nesterov=True)
+    model = model_architecture.VGG16_Untrained(10, input_shape)
+    sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
     history = model.fit(x_train, y_train, batch_size=2, epochs=25, validation_data=(x_val, y_val), verbose=1)
