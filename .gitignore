@@ -9,6 +9,7 @@ data2/
 validation/
 validation_spec/
 model/
+notes.md
 
 #PyCharm
 .idea/

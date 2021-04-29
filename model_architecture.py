@@ -96,25 +96,17 @@ def VGG16_Untrained(num_classes, input_shape):
 def VGG16_Pretrained(num_classes, input_shape):
     print("pretrained vgg16")
     from tensorflow.keras.applications.vgg16 import VGG16
-    from tensorflow.keras.layers import Input, Flatten, Dense
+    from tensorflow.keras.layers import Flatten, Dense
     from tensorflow.keras.models import Model
 
-    # Get back the convolutional part of a VGG network trained on ImageNet
-    model_vgg16_conv = VGG16(weights='imagenet', include_top=False)
+    model = VGG16(weights='imagenet', include_top=False, input_shape=input_shape)
 
-    # Create own input layer
-    input = Input(input_shape, name='image_input')
+    flatten = Flatten()
+    new_layer2 = Dense(num_classes, activation='softmax', name='my_dense_2')
 
-    # Use the generated model
-    output_vgg16_conv = model_vgg16_conv(input)
+    inp2 = model.input
+    out2 = new_layer2(flatten(model.output))
 
-    # Add the fully-connected layers
-    x = Flatten(name='flatten')(output_vgg16_conv)
-    x = Dense(4096, activation='relu', name='fc1')(x)
-    x = Dense(4096, activation='relu', name='fc2')(x)
-    x = Dense(num_classes, activation='softmax', name='predictions')(x)
+    model2 = Model(inp2, out2)
 
-    # Create own model
-    model = Model(input=input, output=x)
-
-    return model
+    return model2
