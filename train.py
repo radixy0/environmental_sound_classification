@@ -30,7 +30,7 @@ def getSpectrogram(file):
         data = stereodata
 
     plt.ioff()
-    mpl.use('Agg')  # to prevent mem leak of mpl
+    mpl.use('Agg')  # to prevent weird memory leak of mpl
 
     fig, ax = plt.subplots(1)
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
