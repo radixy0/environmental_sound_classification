@@ -1,17 +1,8 @@
-def getModel(id, num_classes, input_shape):
-    if(id==1):
-        return ownModel(num_classes, input_shape)
-    elif(id==2):
-        return VGG_16(num_classes, input_shape)
-    elif (id == 3):
-        return ownModel2(num_classes, input_shape)
-
 def ownModel(num_classes, input_shape):
     print("own model")
     import tensorflow as tf
     from tensorflow.keras import layers, models
-    from tensorflow.keras.optimizers import SGD
-
+    
     #model architecture:
     model=models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=input_shape))
@@ -28,8 +19,6 @@ def ownModel(num_classes, input_shape):
     model.add(layers.Dense(128, activation=tf.nn.relu))
     model.add(layers.Dense(num_classes,  activation=tf.nn.softmax))
 
-    sgd = SGD(lr=0.0001, decay=1e-6, momentum=0.9, nesterov=True)
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
 def VGG_16(num_classes, input_shape):
@@ -37,7 +26,7 @@ def VGG_16(num_classes, input_shape):
     from tensorflow.keras.models import Sequential
     from tensorflow.keras.layers import Flatten, Dense, Dropout
     from tensorflow.keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D
-    from tensorflow.keras.optimizers import SGD
+
 
     model = Sequential()
     model.add(ZeroPadding2D((1,1), input_shape=input_shape))
@@ -83,16 +72,12 @@ def VGG_16(num_classes, input_shape):
     model.add(Dropout(0.5))
     model.add(Dense(num_classes, activation='softmax'))
 
-    sgd = SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True)
-    model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
-
     return model
 
 def ownModel2(num_classes, input_shape):
     from tensorflow.keras.models import Sequential
     from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
-    from tensorflow import keras
-    from tensorflow.keras.optimizers import SGD
+
 
     model = Sequential()
     model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=input_shape))
@@ -103,7 +88,23 @@ def ownModel2(num_classes, input_shape):
     model.add(Dense(128, activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(num_classes, activation='softmax'))
-    sgd = SGD(lr=0.0001, decay=1e-6, momentum=0.9, nesterov=True)
-    model.compile(loss=keras.losses.categorical_crossentropy, optimizer=sgd, metrics=['accuracy'])
 
+    return model
+
+def VGG16_Pretrained(num_classes, input_shape):
+    print("pretrained vgg16")
+    from tensorflow.keras.applications.vgg16 import VGG16
+
+
+    model = VGG16(
+        include_top=False,
+        weights="imagenet",
+        input_tensor=None,
+        input_shape=input_shape,
+        pooling=None,
+        classes=num_classes,
+        classifier_activation="softmax",
+    )
+    
+    
     return model

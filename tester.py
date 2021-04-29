@@ -1,4 +1,4 @@
-from train2 import getSpectrogram
+from train import getSpectrogram
 import matplotlib.pyplot as plt
 
 fig,ax = plt.subplots(1)

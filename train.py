@@ -5,13 +5,15 @@ import matplotlib.pyplot as plt
 import utils
 from tqdm import tqdm
 from scipy.io import wavfile
+
 utils.silenceTensorflow(3)
 from tensorflow import keras
+from tensorflow.keras.optimizers import SGD
 
 audio_dir = "data/audio/"
 model_dir = utils.getModelFolder()
-imwidth = 75
-imheight = 50
+imwidth = 375
+imheight = 250
 num_classes = 10
 NFFT = 512
 
@@ -26,20 +28,19 @@ def getSpectrogram(file):
         data = stereodata
 
     plt.ioff()
-    fig,ax = plt.subplots(1)
+    fig, ax = plt.subplots(1)
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     ax.axis('off')
-    pxx, freqs, bins, im = ax.specgram(x=data, Fs=rate, NFFT=NFFT, noverlap=256)#, noverlap=NFFT - 1)
+    pxx, freqs, bins, im = ax.specgram(x=data, Fs=rate, NFFT=NFFT, noverlap=256)  # , noverlap=NFFT - 1)
     ax.axis('off')
-    #plt.rcParams['figure.figsize'] = [0.75, 0.5]
-    fig.set_size_inches(0.75,0.5)
+    # plt.rcParams['figure.figsize'] = [0.75, 0.5]
     fig.set_dpi(100)
+    fig.set_size_inches(imwidth / 100, imheight / 100)
     fig.canvas.draw()
-    width, height = fig.get_size_inches() * fig.get_dpi()
     mplimage = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
-    imarray = np.reshape(mplimage, (int(width), int(height), 3))
-    #print(width, height)
-    #plt.clf()
+    imarray = np.reshape(mplimage, (int(imwidth), int(imheight), 3))
+    # print(width, height)
+    # plt.clf()
     plt.close()
     gray = np.dot(imarray[..., :3], [0.299, 0.587, 0.114])
     return gray
@@ -62,6 +63,7 @@ toHumanLabels = {
     9: "street_music"
 }
 
+
 def getTrainData():
     x_path = "data/x.npy"
     y_path = "data/y.npy"
@@ -83,7 +85,7 @@ def getTrainData():
             try:
                 spectrogram = getSpectrogram(audio_dir + f)
             except ValueError as e:
-                print("valueerror reading file: ", audio_dir + f)
+                print("\nvalueerror reading file: ", audio_dir + f)
                 continue
 
             normgram = normalizeSpectrogram(spectrogram)
@@ -107,11 +109,15 @@ def main():
     y_train = keras.utils.to_categorical(y_train, num_classes)
 
     input_shape = (imwidth, imheight, 1)
-    print("shape", x_train.shape)
-    print("label shape: ", y_train.shape)
+    print("x shape", x_train.shape)
+    print("y shape: ", y_train.shape)
     print("test: ", x_train[333][20][21][0])
-    model = model_architecture.getModel(2, 10, input_shape)
-    history = model.fit(x_train, y_train, epochs=250, validation_split=0.3, verbose=1)
+
+    model = model_architecture.VGG_16(10, input_shape)
+    sgd = SGD(lr=1e-5, decay=1e-6, momentum=0.9, nesterov=True)
+    model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+
+    history = model.fit(x_train, y_train, epochs=250, validation_split=0.1, verbose=1, shuffle=True)
 
     model_filename = "model.h5"
     model.save(model_dir.joinpath(model_filename), include_optimizer=True)
