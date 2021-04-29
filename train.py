@@ -117,7 +117,7 @@ def getData():
         for i, f in enumerate(tqdm(file_list)):
             # get label
             split = f.split("-")
-            y_train[i] = int(split[1])
+            y_val[i] = int(split[1])
             # get spectrogram
             try:
                 spectrogram = getSpectrogram(val_dir + f)
@@ -126,7 +126,7 @@ def getData():
                 continue
 
             normgram = normalizeSpectrogram(spectrogram)
-            x_train[i] = normgram
+            x_val[i] = normgram
 
         np.save(x_val_path, x_val)
         np.save(y_val_path, y_val)
@@ -159,7 +159,7 @@ def main():
     sgd = SGD(lr=0.0005, decay=1e-6, momentum=0.9, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
-    history = model.fit(x_train, y_train, epochs=250, validation_data=(x_val, y_val), verbose=1)
+    history = model.fit(x_train, y_train, batch_size=2, epochs=25, validation_data=(x_val, y_val), verbose=1)
 
     model_filename = "model.h5"
     model.save(model_dir.joinpath(model_filename), include_optimizer=True)
