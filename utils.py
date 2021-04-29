@@ -2,21 +2,10 @@ import glob
 import os
 import pathlib
 
-import librosa
-import librosa.display
-import matplotlib.pyplot as plt
-import nlpaug.augmenter.audio as naa
-import nlpaug.flow as naf
-import numpy as np
-import soundfile as sf
-from PIL import Image
-from pydub import AudioSegment, effects
-from tqdm import tqdm
-import shutil
-
 currDirectory = pathlib.Path(__file__).parent.absolute()
 audio_dir = currDirectory.joinpath("data/audio")
 model_dir = currDirectory.joinpath("model")
+val_dir = currDirectory.joinpath("data/validation/")
 
 SPLIT_LENGTH = 5  # in s
 USE_CORES = -1
@@ -48,6 +37,10 @@ def getModelFolder():
         os.makedirs(model_dir)
     return model_dir
 
+def getValFolder():
+    if not os.path.exists(val_dir):
+        os.makedirs(val_dir)
+    return val_dir
 
 def getModelList():
     return os.listdir(getModelFolder())

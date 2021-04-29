@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import model_architecture
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import utils
 from tqdm import tqdm
@@ -12,6 +13,7 @@ from tensorflow.keras.optimizers import SGD
 
 audio_dir = "data/audio/"
 model_dir = utils.getModelFolder()
+val_dir = "data/validation/"
 imwidth = 375
 imheight = 250
 num_classes = 10
@@ -28,12 +30,13 @@ def getSpectrogram(file):
         data = stereodata
 
     plt.ioff()
+    mpl.use('Agg')  # to prevent mem leak of mpl
+
     fig, ax = plt.subplots(1)
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     ax.axis('off')
     pxx, freqs, bins, im = ax.specgram(x=data, Fs=rate, NFFT=NFFT, noverlap=256)  # , noverlap=NFFT - 1)
     ax.axis('off')
-    # plt.rcParams['figure.figsize'] = [0.75, 0.5]
     fig.set_dpi(100)
     fig.set_size_inches(imwidth / 100, imheight / 100)
     fig.canvas.draw()
@@ -64,9 +67,14 @@ toHumanLabels = {
 }
 
 
-def getTrainData():
-    x_path = "data/x.npy"
-    y_path = "data/y.npy"
+def getData():
+    x_path = "data/x_train.npy"
+    y_path = "data/y_train.npy"
+
+    x_val_path = "data/x_val.npy"
+    y_val_path = "data/y_val.npy"
+
+    # get training files
     if not (os.path.isfile(x_path)) or not (os.path.isfile(y_path)):
         file_list = [f for f in os.listdir(audio_dir) if '.wav' in f]
         file_list.sort()
@@ -75,8 +83,6 @@ def getTrainData():
         y_train = np.zeros(len(file_list))
 
         print("preparing files..")
-
-        fig, ax = plt.subplots(1)
         for i, f in enumerate(tqdm(file_list)):
             # get label
             split = f.split("-")
@@ -91,38 +97,74 @@ def getTrainData():
             normgram = normalizeSpectrogram(spectrogram)
             x_train[i] = normgram
 
-        plt.close()
         np.save(x_path, x_train)
         np.save(y_path, y_train)
 
     else:
-        print("found saved files")
+        print("found saved training files")
         x_train = np.load(x_path)
         y_train = np.load(y_path)
 
-    return x_train, y_train
+    # get validation files
+    if not (os.path.isfile(x_val_path)) or not (os.path.isfile(y_val_path)):
+        file_list = [f for f in os.listdir(val_dir) if '.wav' in f]
+        file_list.sort()
+
+        x_val = np.zeros((len(file_list), imwidth, imheight), dtype=np.float64)
+        y_val = np.zeros(len(file_list))
+
+        print("preparing validation files..")
+        for i, f in enumerate(tqdm(file_list)):
+            # get label
+            split = f.split("-")
+            y_train[i] = int(split[1])
+            # get spectrogram
+            try:
+                spectrogram = getSpectrogram(val_dir + f)
+            except ValueError as e:
+                print("\nvalueerror reading file: ", val_dir + f)
+                continue
+
+            normgram = normalizeSpectrogram(spectrogram)
+            x_train[i] = normgram
+
+        np.save(x_val_path, x_val)
+        np.save(y_val_path, y_val)
+
+    else:
+        print("found saved validation files")
+        x_val = np.load(x_val_path)
+        y_val = np.load(y_val_path)
+
+    return x_train, y_train, x_val, y_val
 
 
 def main():
-    x_train, y_train = getTrainData()
-    x_train = x_train.reshape(x_train.shape[0], imwidth, imheight, 1)
+    x_train, y_train, x_val, y_val = getData()
+
+    x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], 1)
     y_train = keras.utils.to_categorical(y_train, num_classes)
 
-    input_shape = (imwidth, imheight, 1)
+    x_val = x_val.reshape(x_val.shape[0], x_val.shape[1], x_val.shape[2], 1)
+    y_val = keras.utils.to_categorical(y_val, num_classes)
+
+    input_shape = (x_train.shape[1], x_train.shape[2], 1)
     print("x shape", x_train.shape)
     print("y shape: ", y_train.shape)
+    print("x val shape: ", x_val.shape)
+    print("y val shape: ", y_val.shape)
     print("test: ", x_train[333][20][21][0])
 
-    model = model_architecture.VGG_16(10, input_shape)
-    sgd = SGD(lr=1e-5, decay=1e-6, momentum=0.9, nesterov=True)
+    model = model_architecture.VGG16_Untrained(10, input_shape)
+    sgd = SGD(lr=0.0005, decay=1e-6, momentum=0.9, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
-    history = model.fit(x_train, y_train, epochs=250, validation_split=0.1, verbose=1, shuffle=True)
+    history = model.fit(x_train, y_train, epochs=250, validation_data=(x_val, y_val), verbose=1)
 
     model_filename = "model.h5"
     model.save(model_dir.joinpath(model_filename), include_optimizer=True)
 
-    print("\n\nAll done! Model saved to /model" + model_filename)
+    print("\n\nAll done! Model and Diagrams saved to /model" + model_filename)
 
     # summarize history for accuracy
     plt.plot(history.history['accuracy'])
