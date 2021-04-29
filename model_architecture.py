@@ -102,7 +102,7 @@ def VGG16_Pretrained(num_classes, input_shape):
     # Get back the convolutional part of a VGG network trained on ImageNet
     model_vgg16_conv = VGG16(weights='imagenet', include_top=False)
 
-    # Create your own input format (here 3x200x200)
+    # Create own input layer
     input = Input(input_shape, name='image_input')
 
     # Use the generated model
@@ -114,7 +114,7 @@ def VGG16_Pretrained(num_classes, input_shape):
     x = Dense(4096, activation='relu', name='fc2')(x)
     x = Dense(num_classes, activation='softmax', name='predictions')(x)
 
-    # Create your own model
+    # Create own model
     model = Model(input=input, output=x)
 
     return model

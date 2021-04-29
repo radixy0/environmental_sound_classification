@@ -153,9 +153,9 @@ def main():
     print("y shape: ", y_train.shape)
     print("x val shape: ", x_val.shape)
     print("y val shape: ", y_val.shape)
-    print("test: ", x_train[333][20][21][0])
+    print("test: ", x_train[333][20][21][0]) # test random value to see if its in [0,1]
 
-    model = model_architecture.VGG16_Untrained(10, input_shape)
+    model = model_architecture.VGG16_Pretrained(10, input_shape)
     sgd = SGD(lr=0.0005, decay=1e-6, momentum=0.9, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
