@@ -1,5 +1,5 @@
 def model1(num_classes, input_shape):
-    print("own model")
+    print("model 1")
     import tensorflow as tf
     from tensorflow.keras import layers, models
     
@@ -22,6 +22,7 @@ def model1(num_classes, input_shape):
     return model
 
 def model2(num_classes, input_shape):
+    print("model 2")
     from tensorflow.keras.models import Sequential
     from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
 
