@@ -14,10 +14,15 @@ from tensorflow.keras.optimizers import SGD
 audio_dir = "data/audio/"
 model_dir = utils.getModelFolder()
 val_dir = "data/validation/"
-imwidth = 375
-imheight = 250
+imwidth = 225
+imheight = 150
 num_classes = 10
-NFFT = 512
+NFFT = 2048
+learning_rate = 0.0001
+decay = 1e-6
+momentum = 0.9
+epochs = 250
+batch_size = 16
 
 
 def getSpectrogram(file):
@@ -35,7 +40,7 @@ def getSpectrogram(file):
     fig, ax = plt.subplots(1)
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     ax.axis('off')
-    pxx, freqs, bins, im = ax.specgram(x=data, Fs=rate, NFFT=NFFT, noverlap=256)  # , noverlap=NFFT - 1)
+    pxx, freqs, bins, im = ax.specgram(x=data, Fs=rate, NFFT=NFFT, noverlap=512)  # , noverlap=NFFT - 1)
     ax.axis('off')
     fig.set_dpi(100)
     fig.set_size_inches(imwidth / 100, imheight / 100)
@@ -141,7 +146,6 @@ def getData():
 
 def main():
     x_train, y_train, x_val, y_val = getData()
-
     x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], 1)
     y_train = keras.utils.to_categorical(y_train, num_classes)
 
@@ -153,13 +157,17 @@ def main():
     print("y shape: ", y_train.shape)
     print("x val shape: ", x_val.shape)
     print("y val shape: ", y_val.shape)
-    print("test: ", x_train[333][20][21][0]) # test random value to see if its in [0,1]
+    print("test: ", x_train[333][20][21][0])  # test random value to see if its in [0,1]
+
+    assert not np.any(np.isnan(x_train))
+    assert not np.any(np.isnan(x_val))
 
     model = model_architecture.VGG16_Untrained(10, input_shape)
-    sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    sgd = SGD(lr=learning_rate, decay=decay, momentum=momentum, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
-    history = model.fit(x_train, y_train, batch_size=2, epochs=25, validation_data=(x_val, y_val), verbose=1)
+    history = model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(x_val, y_val),
+                        verbose=1)
 
     model_filename = "model.h5"
     model.save(model_dir.joinpath(model_filename), include_optimizer=True)
