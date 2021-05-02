@@ -14,11 +14,12 @@ from tensorflow.keras.optimizers import SGD
 audio_dir = "data/audio/"
 model_dir = utils.getModelFolder()
 val_dir = "data/validation/"
-imwidth = 225
-imheight = 150
+imwidth = 320
+imheight = 240
 num_classes = 10
 NFFT = 2048
-learning_rate = 0.0001
+noverlap = 512
+learning_rate = 0.001
 decay = 1e-6
 momentum = 0.9
 epochs = 250
@@ -40,7 +41,7 @@ def getSpectrogram(file):
     fig, ax = plt.subplots(1)
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     ax.axis('off')
-    pxx, freqs, bins, im = ax.specgram(x=data, Fs=rate, NFFT=NFFT, noverlap=512)  # , noverlap=NFFT - 1)
+    pxx, freqs, bins, im = ax.specgram(x=data, Fs=rate, NFFT=NFFT, noverlap=noverlap)  # , noverlap=NFFT - 1)
     ax.axis('off')
     fig.set_dpi(100)
     fig.set_size_inches(imwidth / 100, imheight / 100)
