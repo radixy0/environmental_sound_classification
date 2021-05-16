@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from scipy.io import wavfile
 
-imwidth = 640
-imheight = 480
-NFFT = 512
-noverlap = 128
+imwidth = 450
+imheight = 300
+NFFT = 2048
+noverlap = 512
 
 audio_dir = "data/audio/"
 val_dir = "data/validation/"
@@ -69,6 +69,7 @@ def main():
             spectrogram = getSpectrogram(audio_dir + f)
         except ValueError as e:
             print("\nvalueerror reading file: ", audio_dir + f)
+            print(e)
             continue
 
         normgram = normalizeSpectrogram(spectrogram)

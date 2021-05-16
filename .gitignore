@@ -10,6 +10,8 @@ validation/
 validation_spec/
 model/
 notes.md
+ls7-updater/
+*.bat
 
 #PyCharm
 .idea/

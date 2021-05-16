@@ -14,14 +14,11 @@ x_val_path = "data/x_val.npy"
 y_val_path = "data/y_val.npy"
 
 num_classes = 10
-learning_rate = 0.001
+learning_rate = 0.0001
 decay = 1e-6
 momentum = 0.9
-epochs = 15
+epochs = 250
 batch_size = 16
-
-
-
 
 
 def getData():
@@ -60,12 +57,16 @@ def main():
     assert not np.any(np.isnan(x_train))
     assert not np.any(np.isnan(x_val))
 
-    model = model_architecture.model2(10, input_shape)
+    model = model_architecture.VGG16_Untrained(10, input_shape)
     sgd = SGD(lr=learning_rate, decay=decay, momentum=momentum, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
+    callbacks=[
+        keras.callbacks.EarlyStopping(patience=5, verbose=1)
+    ]
+
     history = model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(x_val, y_val),
-                        verbose=1)
+                        verbose=1, callbacks=callbacks)
 
     model_filename = "model.h5"
     model.save(model_dir+model_filename, include_optimizer=True)
