@@ -1,0 +1,48 @@
+import os
+import datetime
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = "2"
+from tensorflow import keras
+from tensorflow.keras.optimizers import SGD
+from train import getData
+
+model_dir = "model/"
+
+num_classes = 10
+learning_rate = 0.00001
+decay = 1e-6
+momentum = 0.9
+epochs = 250
+batch_size = 16
+
+
+x_train, y_train, x_val, y_val = getData()
+x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], x_train.shape[2], 1))
+y_train = keras.utils.to_categorical(y_train, num_classes)
+
+x_val = x_val.reshape((x_val.shape[0], x_val.shape[1], x_val.shape[2], 1))
+y_val = keras.utils.to_categorical(y_val, num_classes)
+
+input_shape = (x_train.shape[1], x_train.shape[2], 1)
+print("x shape", x_train.shape)
+print("y shape: ", y_train.shape)
+print("x val shape: ", x_val.shape)
+print("y val shape: ", y_val.shape)
+
+model = keras.models.load_model(model_dir+"model.h5")
+sgd = SGD(lr=learning_rate, decay=decay, momentum=momentum, nesterov=True)
+model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+
+log_dir = "logs/fit/" + model.name + "_" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+
+callbacks=[
+    keras.callbacks.EarlyStopping(patience=5, verbose=1),
+    keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+]
+
+history = model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(x_val, y_val),
+                    verbose=2, callbacks=callbacks)
+
+model_filename = "model.h5"
+model.save(model_dir+model_filename, include_optimizer=True)
+
+print("\n\nAll done! Model saved to /model/" + model_filename)

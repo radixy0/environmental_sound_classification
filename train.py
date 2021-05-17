@@ -13,10 +13,8 @@ y_path = "data/y_train.npy"
 x_val_path = "data/x_val.npy"
 y_val_path = "data/y_val.npy"
 
-log_dir = "logs/fit/"+datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-
 num_classes = 10
-learning_rate = 0.01
+learning_rate = 0.0001
 decay = 1e-6
 momentum = 0.9
 epochs = 250
@@ -63,6 +61,8 @@ def main():
     sgd = SGD(lr=learning_rate, decay=decay, momentum=momentum, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
+    log_dir = "logs/fit/" + model.name + "_" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+
     callbacks=[
         keras.callbacks.EarlyStopping(patience=5, verbose=1),
         keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
@@ -74,7 +74,7 @@ def main():
     model_filename = "model.h5"
     model.save(model_dir+model_filename, include_optimizer=True)
 
-    print("\n\nAll done! Model saved to /model" + model_filename)
+    print("\n\nAll done! Model saved to /model/" + model_filename)
 
 if __name__ == "__main__":
     main()

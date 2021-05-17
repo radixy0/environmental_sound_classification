@@ -4,7 +4,7 @@ def model1(num_classes, input_shape):
     from tensorflow.keras import layers, models
     
     #model architecture:
-    model=models.Sequential()
+    model=models.Sequential(name="model1")
     model.add(layers.Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=input_shape))
     model.add(layers.Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
     model.add(layers.MaxPooling2D((2, 2)))
@@ -27,7 +27,7 @@ def model2(num_classes, input_shape):
     from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
 
 
-    model = Sequential()
+    model = Sequential(name="model2")
     model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=input_shape))
     model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -47,7 +47,7 @@ def VGG16_Untrained(num_classes, input_shape):
     from tensorflow.keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D
 
 
-    model = Sequential()
+    model = Sequential(name="VGG16")
     model.add(ZeroPadding2D((1,1), input_shape=input_shape))
     model.add(Convolution2D(64, (3, 3), activation='relu'))
     model.add(ZeroPadding2D((1,1)))
