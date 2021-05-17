@@ -12,6 +12,7 @@ model/
 notes.md
 ls7-updater/
 *.bat
+logs/
 
 #PyCharm
 .idea/
