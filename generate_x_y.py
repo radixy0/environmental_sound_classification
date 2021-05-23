@@ -7,8 +7,8 @@ import librosa
 
 imwidth = 450
 imheight = 300
-NFFT = 2048
-noverlap = 512
+NFFT = 512
+noverlap = 128
 
 audio_dir = "data/audio/"
 val_dir = "data/validation/"
