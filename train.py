@@ -6,7 +6,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = "2"
 from tensorflow import keras
 from tensorflow.keras.optimizers import SGD
 
-model_dir = "model/"
+weights_file = "model/weights"
 x_path = "data/x_train.npy"
 y_path = "data/y_train.npy"
 
@@ -14,7 +14,7 @@ x_val_path = "data/x_val.npy"
 y_val_path = "data/y_val.npy"
 
 num_classes = 10
-learning_rate = 0.0001
+learning_rate = 1e-3
 decay = 1e-6
 momentum = 0.9
 epochs = 250
@@ -36,7 +36,10 @@ def getData():
 
 
 def main():
-    if not (os.path.isfile(x_path)) or not (os.path.isfile(y_path)) or not (os.path.isfile(x_val_path)) or not (os.path.isfile(y_val_path)):
+    if not (os.path.isfile(x_path)) \
+            or not (os.path.isfile(y_path)) \
+            or not (os.path.isfile(x_val_path)) \
+            or not (os.path.isfile(y_val_path)):
         print("files not found! aborting..")
         return
 
@@ -57,24 +60,26 @@ def main():
     assert not np.any(np.isnan(x_train))
     assert not np.any(np.isnan(x_val))
 
-    model = model_architecture.VGG19_Untrained(10, input_shape)
+    model = model_architecture.model1(10, input_shape)
     sgd = SGD(lr=learning_rate, decay=decay, momentum=momentum, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
     log_dir = "logs/fit/" + model.name + "_" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
     callbacks=[
-        keras.callbacks.EarlyStopping(patience=5, verbose=1),
-        keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+        keras.callbacks.EarlyStopping(patience=2, verbose=1),
+        keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1),
+        keras.callbacks.ModelCheckpoint(
+            "model/weights", monitor='val_loss', verbose=1, save_best_only=True,
+            save_weights_only=True, mode='auto', save_freq='epoch',
+            options=None
+        )
     ]
 
     history = model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(x_val, y_val),
                         verbose=2, callbacks=callbacks)
 
-    model_filename = "model.h5"
-    model.save(model_dir+model_filename, include_optimizer=True)
-
-    print("\n\nAll done! Model saved to /model/" + model_filename)
+    print("\n\nAll done! Weights saved to "+weights_file)
 
 if __name__ == "__main__":
     main()

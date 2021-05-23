@@ -1,14 +1,17 @@
 import os
 import datetime
+
+import model_architecture
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = "2"
 from tensorflow import keras
 from tensorflow.keras.optimizers import SGD
 from train import getData
 
-model_dir = "model/"
+weights_file="model/weights"
 
 num_classes = 10
-learning_rate = 0.00001
+learning_rate = 1e-4
 decay = 1e-6
 momentum = 0.9
 epochs = 250
@@ -28,21 +31,25 @@ print("y shape: ", y_train.shape)
 print("x val shape: ", x_val.shape)
 print("y val shape: ", y_val.shape)
 
-model = keras.models.load_model(model_dir+"model.h5")
+model = model_architecture.model1(num_classes, input_shape)
+print("loaded model: ", model.name)
+load_status = model.load_weights(weights_file)
+load_status.expect_partial()
+
 sgd = SGD(lr=learning_rate, decay=decay, momentum=momentum, nesterov=True)
 model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
 log_dir = "logs/fit/" + model.name + "_" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
 callbacks=[
-    keras.callbacks.EarlyStopping(patience=5, verbose=1),
-    keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+    keras.callbacks.EarlyStopping(patience=2, verbose=1),
+    keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1),
+    keras.callbacks.ModelCheckpoint(
+            weights_file, monitor='val_loss', verbose=1, save_best_only=True,
+            save_weights_only=True, mode='auto', save_freq='epoch',
+            options=None
+        )
 ]
 
 history = model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(x_val, y_val),
                     verbose=2, callbacks=callbacks)
-
-model_filename = "model.h5"
-model.save(model_dir+model_filename, include_optimizer=True)
-
-print("\n\nAll done! Model saved to /model/" + model_filename)

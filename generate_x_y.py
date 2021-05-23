@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from scipy.io import wavfile
+import librosa
 
 imwidth = 450
 imheight = 300
@@ -20,13 +20,14 @@ y_val_path = "data/y_val.npy"
 
 
 def getSpectrogram(file):
-    rate, stereodata = wavfile.read(file)
+    #rate, stereodata = wavfile.read(file)
+    data, rate = librosa.load(file, sr=22050, mono=True)
 
     # convert to mono
-    if stereodata.ndim != 1:
-        data = stereodata.sum(axis=1) / 2
-    else:
-        data = stereodata
+    #if stereodata.ndim != 1:
+    #    data = stereodata.sum(axis=1) / 2
+    #else:
+    #    data = stereodata
 
     plt.ioff()
     mpl.use('Agg')  # to prevent weird memory leak of mpl
