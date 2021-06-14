@@ -14,7 +14,7 @@ x_val_path = "data/x_val.npy"
 y_val_path = "data/y_val.npy"
 
 num_classes = 10
-learning_rate = 1e-3
+learning_rate = 1e-4
 decay = 1e-6
 momentum = 0.9
 epochs = 250
@@ -60,7 +60,7 @@ def main():
     assert not np.any(np.isnan(x_train))
     assert not np.any(np.isnan(x_val))
 
-    model = model_architecture.model1(10, input_shape)
+    model = model_architecture.model4(10, input_shape)
     sgd = SGD(lr=learning_rate, decay=decay, momentum=momentum, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -70,8 +70,8 @@ def main():
         keras.callbacks.EarlyStopping(patience=2, verbose=1),
         keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1),
         keras.callbacks.ModelCheckpoint(
-            "model/weights", monitor='val_loss', verbose=1, save_best_only=True,
-            save_weights_only=True, mode='auto', save_freq='epoch',
+            "model/model.h5", monitor='val_loss', verbose=1, save_best_only=True,
+            save_weights_only=False, mode='auto', save_freq='epoch',
             options=None
         )
     ]

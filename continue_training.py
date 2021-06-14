@@ -8,10 +8,10 @@ from tensorflow import keras
 from tensorflow.keras.optimizers import SGD
 from train import getData
 
-weights_file="model/weights"
+model_file="model/model.h5"
 
 num_classes = 10
-learning_rate = 1e-4
+learning_rate = 1e-6
 decay = 1e-6
 momentum = 0.9
 epochs = 250
@@ -31,10 +31,8 @@ print("y shape: ", y_train.shape)
 print("x val shape: ", x_val.shape)
 print("y val shape: ", y_val.shape)
 
-model = model_architecture.model1(num_classes, input_shape)
+model = keras.models.load_model(model_file)
 print("loaded model: ", model.name)
-load_status = model.load_weights(weights_file)
-load_status.expect_partial()
 
 sgd = SGD(lr=learning_rate, decay=decay, momentum=momentum, nesterov=True)
 model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
@@ -45,8 +43,8 @@ callbacks=[
     keras.callbacks.EarlyStopping(patience=2, verbose=1),
     keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1),
     keras.callbacks.ModelCheckpoint(
-            weights_file, monitor='val_loss', verbose=1, save_best_only=True,
-            save_weights_only=True, mode='auto', save_freq='epoch',
+            model_file, monitor='val_loss', verbose=1, save_best_only=True,
+            save_weights_only=False, mode='auto', save_freq='epoch',
             options=None
         )
 ]

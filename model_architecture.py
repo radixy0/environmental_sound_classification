@@ -40,6 +40,63 @@ def model2(num_classes, input_shape):
     return model
 
 
+def model3(num_classes, input_shape):
+    print("model 3")
+    import tensorflow as tf
+    from tensorflow.keras import layers, models
+
+    # model architecture:
+    model = models.Sequential(name="model1")
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
+                            input_shape=input_shape))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(256, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.Conv2D(256, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Flatten())
+    model.add(layers.Dense(128, activation=tf.nn.relu))
+    model.add(layers.Dense(num_classes, activation=tf.nn.softmax))
+
+    return model
+
+def model4(num_classes, input_shape):
+    print("model 4")
+    import tensorflow as tf
+    from tensorflow.keras import layers, models
+
+    # model architecture:
+    model = models.Sequential(name="model1")
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
+                            input_shape=input_shape))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(256, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.Conv2D(256, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(512, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.Conv2D(512, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Flatten())
+    model.add(layers.Dense(128, activation=tf.nn.relu))
+    model.add(layers.Dense(num_classes, activation=tf.nn.softmax))
+
+    return model
+
 def VGG16_Untrained(num_classes, input_shape):
     print("vgg_16")
     from tensorflow.keras.models import Sequential
