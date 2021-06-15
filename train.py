@@ -5,50 +5,36 @@ import datetime
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = "2"
 from tensorflow import keras
 from tensorflow.keras.optimizers import SGD
-
-weights_file = "model/weights"
-x_path = "data/x_train.npy"
-y_path = "data/y_train.npy"
-
-x_val_path = "data/x_val.npy"
-y_val_path = "data/y_val.npy"
-
-num_classes = 10
-learning_rate = 1e-4
-decay = 1e-6
-momentum = 0.9
-epochs = 250
-batch_size = 16
-
+import settings
 
 def getData():
     # get training files
     print("found saved training files")
-    x_train = np.load(x_path)
-    y_train = np.load(y_path)
+    x_train = np.load(settings.x_path)
+    y_train = np.load(settings.y_path)
 
     # get validation files
     print("found saved validation files")
-    x_val = np.load(x_val_path)
-    y_val = np.load(y_val_path)
+    x_val = np.load(settings.x_val_path)
+    y_val = np.load(settings.y_val_path)
 
     return x_train, y_train, x_val, y_val
 
 
 def main():
-    if not (os.path.isfile(x_path)) \
-            or not (os.path.isfile(y_path)) \
-            or not (os.path.isfile(x_val_path)) \
-            or not (os.path.isfile(y_val_path)):
+    if not (os.path.isfile(settings.x_path)) \
+            or not (os.path.isfile(settings.y_path)) \
+            or not (os.path.isfile(settings.x_val_path)) \
+            or not (os.path.isfile(settings.y_val_path)):
         print("files not found! aborting..")
         return
 
     x_train, y_train, x_val, y_val = getData()
     x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], x_train.shape[2], 1))
-    y_train = keras.utils.to_categorical(y_train, num_classes)
+    y_train = keras.utils.to_categorical(y_train, settings.num_classes)
 
     x_val = x_val.reshape((x_val.shape[0], x_val.shape[1], x_val.shape[2], 1))
-    y_val = keras.utils.to_categorical(y_val, num_classes)
+    y_val = keras.utils.to_categorical(y_val, settings.num_classes)
 
     input_shape = (x_train.shape[1], x_train.shape[2], 1)
     print("x shape", x_train.shape)
@@ -61,7 +47,7 @@ def main():
     assert not np.any(np.isnan(x_val))
 
     model = model_architecture.model4(10, input_shape)
-    sgd = SGD(lr=learning_rate, decay=decay, momentum=momentum, nesterov=True)
+    sgd = SGD(lr=settings.learning_rate, decay=settings.decay, momentum=settings.momentum, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
     log_dir = "logs/fit/" + model.name + "_" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -76,10 +62,10 @@ def main():
         )
     ]
 
-    history = model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(x_val, y_val),
+    history = model.fit(x_train, y_train, epochs=settings.epochs, batch_size=settings.batch_size, validation_data=(x_val, y_val),
                         verbose=2, callbacks=callbacks)
 
-    print("\n\nAll done! Weights saved to "+weights_file)
+    print("\n\nAll done! Weights saved to "+settings.model_file)
 
 if __name__ == "__main__":
     main()

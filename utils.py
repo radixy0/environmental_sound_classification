@@ -1,13 +1,12 @@
-import glob
+import librosa
 import os
 import pathlib
+import settings
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
 
 currDirectory = pathlib.Path(__file__).parent.absolute()
-audio_dir = currDirectory.joinpath("data/audio")
-model_dir = currDirectory.joinpath("model")
-val_dir = currDirectory.joinpath("data/validation/")
-
-SPLIT_LENGTH = 5  # in s
 USE_CORES = -1
 
 
@@ -27,23 +26,60 @@ def ask_user(question: str):
         if (answer.lower() == "n" or answer.lower() == "no"):
             return False
 
+def getSpectrogram(file):
+    #rate, stereodata = wavfile.read(file)
+    data, rate = librosa.load(file, sr=settings.sr, mono=True)
 
-def getAudioFolder():
-    return audio_dir
+    # convert to mono
+    #if stereodata.ndim != 1:
+    #    data = stereodata.sum(axis=1) / 2
+    #else:
+    #    data = stereodata
+
+    plt.ioff()
+    mpl.use('Agg')  # to prevent weird memory leak of mpl
+
+    fig, ax = plt.subplots(1)
+    fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
+    ax.axis('off')
+    pxx, freqs, bins, im = ax.specgram(x=data, Fs=rate, NFFT=settings.NFFT, noverlap=settings.noverlap)  # , noverlap=NFFT - 1)
+    ax.axis('off')
+    fig.set_dpi(100)
+    fig.set_size_inches(settings.imwidth / 100, settings.imheight / 100)
+    fig.canvas.draw()
+    mplimage = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+    imarray = np.reshape(mplimage, (int(settings.imwidth), int(settings.imheight), 3))
+    # print(width, height)
+    # plt.clf()
+    plt.close()
+    gray = np.dot(imarray[..., :3], [0.299, 0.587, 0.114])
+    return gray
+
+def getSpectrogramRaw(data):
+    plt.ioff()
+    mpl.use('Agg')  # to prevent weird memory leak of mpl
+
+    fig, ax = plt.subplots(1)
+    fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
+    ax.axis('off')
+    pxx, freqs, bins, im = ax.specgram(x=data, Fs=settings.sr, NFFT=settings.NFFT, noverlap=settings.noverlap)
+    ax.axis('off')
+    fig.set_dpi(100)
+    fig.set_size_inches(settings.imwidth / 100, settings.imheight / 100)
+    fig.canvas.draw()
+    mplimage = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+    imarray = np.reshape(mplimage, (int(settings.imwidth), int(settings.imheight), 3))
+    # print(width, height)
+    # plt.clf()
+    plt.close()
+    gray = np.dot(imarray[..., :3], [0.299, 0.587, 0.114])
+    normgram = (gray - gray.min()) / (gray.max() - gray.min())
+
+    return normgram
 
 
-def getModelFolder():
-    if not os.path.exists(model_dir):
-        os.makedirs(model_dir)
-    return model_dir
-
-def getValFolder():
-    if not os.path.exists(val_dir):
-        os.makedirs(val_dir)
-    return val_dir
-
-def getModelList():
-    return os.listdir(getModelFolder())
+def normalizeSpectrogram(array):
+    return (array - array.min()) / (array.max() - array.min())
 
 
 def silenceTensorflow(level: int):
