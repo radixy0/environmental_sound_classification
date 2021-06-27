@@ -9,8 +9,8 @@ y_path = "data/y_train.npy"
 x_val_path = "data/x_val.npy"
 y_val_path = "data/y_val.npy"
 
-data_folder = "data/validation"
-out_folder = "data_out/"
+data_folder = "data/validation/"
+out_folder = "data/generated/"
 
 #training settings
 num_classes = 10
