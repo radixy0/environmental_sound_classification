@@ -218,3 +218,10 @@ def VGG19_Untrained(num_classes, input_shape):
     model = Model(inputs, x, name='vgg19')
 
     return model
+
+def ResNet50(num_classes, input_shape):
+    from tensorflow import keras
+    from keras import applications
+    model = applications.ResNet50(include_top=False, weights=None, input_tensor=input_shape, classes=num_classes)
+
+    return model

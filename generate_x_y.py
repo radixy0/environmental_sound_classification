@@ -1,12 +1,15 @@
 import os
 import numpy as np
-import matplotlib as mpl
-import matplotlib.pyplot as plt
+import sys
 from tqdm import tqdm
 import settings
 from utils import getSpectrogram, normalizeSpectrogram
 
+aug = False
+
 def main():
+    print("include augmented: ", aug)
+
     file_list = [f for f in os.listdir(settings.audio_dir) if '.wav' in f]
     file_list.sort()
 
@@ -28,6 +31,8 @@ def main():
 
         normgram = normalizeSpectrogram(spectrogram)
         x_train[i] = normgram
+
+
 
     np.save(settings.x_path, x_train)
     np.save(settings.y_path, y_train)
@@ -59,4 +64,7 @@ def main():
 
 
 if __name__ == "__main__":
+    if(len(sys.argv) > 1):
+        if(sys.argv[1] == "-aug"):
+            aug=True
     main()
