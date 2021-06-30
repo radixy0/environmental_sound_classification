@@ -13,3 +13,12 @@ temux
 
 
 resnet ausprobieren
+
+
+background noise:
+rain
+birds  
+    https://freesound.org/people/crk365/sounds/38895/ 
+cars
+    https://freesound.org/people/stomachache/sounds/233977/
+    https://freesound.org/people/xef6/sounds/179830/
