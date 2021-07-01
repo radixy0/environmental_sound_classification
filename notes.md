@@ -13,6 +13,7 @@ temux
 
 
 resnet ausprobieren
+pass chosen model as setting
 
 
 background noise:

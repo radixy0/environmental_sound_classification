@@ -46,14 +46,14 @@ def main():
     assert not np.any(np.isnan(x_train))
     assert not np.any(np.isnan(x_val))
 
-    model = model_architecture.model4(10, input_shape)
+    model = model_architecture.InceptionV3(10, input_shape)
     sgd = SGD(lr=settings.learning_rate, decay=settings.decay, momentum=settings.momentum, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
     log_dir = "logs/fit/" + model.name + "_" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
     callbacks=[
-        keras.callbacks.EarlyStopping(patience=2, verbose=1),
+        keras.callbacks.EarlyStopping(patience=settings.patience, verbose=1),
         keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1),
         keras.callbacks.ModelCheckpoint(
             "model/model.h5", monitor='val_loss', verbose=1, save_best_only=True,

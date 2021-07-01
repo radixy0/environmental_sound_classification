@@ -14,11 +14,12 @@ out_folder = "data/generated/"
 
 #training settings
 num_classes = 10
-learning_rate = 1e-4
+learning_rate = 1e-2
 decay = 1e-6
 momentum = 0.9
 epochs = 250
 batch_size = 16
+patience = 2
 
 #spectrogram settings
 imwidth = 450
