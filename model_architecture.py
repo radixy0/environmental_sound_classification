@@ -234,6 +234,21 @@ def ResNet50V2(num_classes, input_shape):
 
     return Model(inputs=model.input, outputs=out(model.output))
 
+def ResNet101V2(num_classes, input_shape):
+    from tensorflow.keras import applications, layers, Model
+    model = applications.ResNet101V2(
+        include_top=False,
+        weights=None,
+        input_tensor=None,
+        input_shape=input_shape,
+        pooling="max",
+        classes=num_classes,
+        classifier_activation="softmax"
+    )
+    out = layers.Dense(num_classes, activation="softmax")
+
+    return Model(inputs=model.input, outputs=out(model.output))
+
 def InceptionV3(num_classes, input_shape):
     from tensorflow.keras import applications, layers, Model
     model = applications.InceptionV3(

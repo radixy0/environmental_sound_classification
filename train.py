@@ -46,7 +46,7 @@ def main():
     assert not np.any(np.isnan(x_train))
     assert not np.any(np.isnan(x_val))
 
-    model = model_architecture.InceptionV3(10, input_shape)
+    model = model_architecture.ResNet101V2(10, input_shape)
     sgd = SGD(lr=settings.learning_rate, decay=settings.decay, momentum=settings.momentum, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
