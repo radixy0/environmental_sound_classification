@@ -26,6 +26,11 @@ def ask_user(question: str):
         if (answer.lower() == "n" or answer.lower() == "no"):
             return False
 
+def getSpectrogram2(file):
+    data, rate = librosa.load(file, sr=settings.sr, mono=True)
+    melspec = np.mean(librosa.feature.melspectrogram(data, rate).T, axis=0)
+    return melspec
+
 def getSpectrogram(file):
     #rate, stereodata = wavfile.read(file)
     data, rate = librosa.load(file, sr=settings.sr, mono=True)

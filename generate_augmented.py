@@ -16,7 +16,7 @@ def main():
         filename_parts = file.split("-")
         new_filename_prefix = filename_parts[0] + "-" + filename_parts[1]
         for jndex, aug in enumerate(possible_augs):
-            filename = new_filename_prefix + "aug_" + aug.name + ".wav"
+            filename = settings.aug_dir + new_filename_prefix + "-aug_" + aug.name + ".wav"
             new_y = aug.augment(y)
             sf.write(filename, new_y, settings.sr)
 

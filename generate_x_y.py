@@ -11,7 +11,11 @@ def main():
     print("include augmented: ", aug)
 
     file_list = [f for f in os.listdir(settings.audio_dir) if '.wav' in f]
+    if(aug):
+        file_list += [f for f in os.listdir(settings.aug_dir)]
+
     file_list.sort()
+
 
     x_train = np.zeros((len(file_list), settings.imwidth, settings.imheight), dtype=np.float64)
     y_train = np.zeros(len(file_list))

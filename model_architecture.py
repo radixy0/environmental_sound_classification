@@ -24,18 +24,19 @@ def model1(num_classes, input_shape):
 def model2(num_classes, input_shape):
     print("model 2")
     from tensorflow.keras.models import Sequential
-    from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
+    from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation
 
+    model = Sequential()
 
-    model = Sequential(name="model2")
-    model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=input_shape))
-    model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
-    model.add(Flatten())
-    model.add(Dense(128, activation='relu'))
+    model.add(Dense(512, input_shape=input_shape))
+    model.add(Activation('relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(num_classes, activation='softmax'))
+
+    model.add(Dense(256))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(num_classes))
+    model.add(Activation('softmax'))
 
     return model
 
@@ -249,6 +250,17 @@ def ResNet101V2(num_classes, input_shape):
 
     return Model(inputs=model.input, outputs=out(model.output))
 
+def ResNet18(num_classes, input_shape):
+    from classification_models.tfkeras import Classifiers
+    from tensorflow.keras import layers, Model
+
+    ResNet18, _ = Classifiers.get('resnet18')
+    base_model = ResNet18(input_shape=input_shape, include_top=False)
+    x = layers.GlobalAveragePooling2D()(base_model.output)
+    output = layers.Dense(num_classes, activation='softmax')(x)
+    return Model(inputs=[base_model.input], outputs=[output])
+
+
 def InceptionV3(num_classes, input_shape):
     from tensorflow.keras import applications, layers, Model
     model = applications.InceptionV3(
@@ -262,3 +274,66 @@ def InceptionV3(num_classes, input_shape):
     )
     out=layers.Dense(num_classes, activation="softmax")
     return Model(inputs=model.input, outputs=out(model.output))
+
+def model_paper(num_classes, input_shape):
+    from tensorflow.keras.layers import Input, BatchNormalization, Activation, Conv2D, MaxPooling2D, Flatten, Dropout, Dense
+    from tensorflow.keras import Model
+    from tensorflow.keras.regularizers import l2
+
+    spec_start = Input(shape=input_shape)
+    spec_x = spec_start
+
+    # l1
+    spec_x = BatchNormalization(axis=3)(spec_x)
+    spec_x = Activation('relu')(spec_x)
+
+    spec_x = Conv2D(24, (5, 5),
+                    padding='same',  # fmap has same size as input
+                    kernel_initializer='he_normal',
+                    data_format='channels_last')(spec_x)
+    spec_x = BatchNormalization(axis=3)(spec_x)
+    spec_x = Activation('relu')(spec_x)
+    spec_x = MaxPooling2D(pool_size=(4, 2), data_format="channels_last")(spec_x)
+
+    # l2
+    spec_x = BatchNormalization(axis=3)(spec_x)
+    spec_x = Activation('relu')(spec_x)
+
+    spec_x = Conv2D(48, (5, 5),
+                    padding='same',  # fmap has same size as input
+                    kernel_initializer='he_normal',
+                    data_format='channels_last')(spec_x)
+    spec_x = BatchNormalization(axis=3)(spec_x)
+    spec_x = Activation('relu')(spec_x)
+    spec_x = MaxPooling2D(pool_size=(4, 2), data_format="channels_last")(spec_x)
+
+    # l3
+    spec_x = BatchNormalization(axis=3)(spec_x)
+    spec_x = Activation('relu')(spec_x)
+
+    spec_x = Conv2D(48, (5, 5),
+                    padding='same',  # fmap has same size as input
+                    kernel_initializer='he_normal',
+                    data_format='channels_last')(spec_x)
+    spec_x = BatchNormalization(axis=3)(spec_x)
+    spec_x = Activation('relu')(spec_x)
+
+    spec_x = Flatten()(spec_x)
+    spec_x = Dropout(0.5)(spec_x)
+    spec_x = Dense(64,
+                   kernel_initializer='he_normal',
+                   kernel_regularizer=l2(1e-3),
+                   activation='relu',
+                   name='dense_1')(spec_x)
+
+    spec_x = Dropout(0.5)(spec_x)
+    out = Dense(num_classes,
+                kernel_initializer='he_normal',
+                kernel_regularizer=l2(1e-3),
+                activation='softmax',
+                name='prediction')(spec_x)
+
+    model = Model(inputs=spec_start, outputs=out)
+
+    return model
+

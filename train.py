@@ -46,9 +46,12 @@ def main():
     assert not np.any(np.isnan(x_train))
     assert not np.any(np.isnan(x_val))
 
-    model = model_architecture.ResNet101V2(10, input_shape)
+    model = model_architecture.model_paper(10, input_shape)
     sgd = SGD(lr=settings.learning_rate, decay=settings.decay, momentum=settings.momentum, nesterov=True)
-    model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+    adam = keras.optimizers.Adam(learning_rate=settings.learning_rate)
+    model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
+
+    model.summary()
 
     log_dir = "logs/fit/" + model.name + "_" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
@@ -59,6 +62,16 @@ def main():
             "model/model.h5", monitor='val_loss', verbose=1, save_best_only=True,
             save_weights_only=False, mode='auto', save_freq='epoch',
             options=None
+        ),
+        keras.callbacks.ReduceLROnPlateau(
+            monitor="val_loss",
+            factor=0.5,
+            patience=settings.lr_patience,
+            verbose=1,
+            mode="auto",
+            min_delta=0.0001,
+            cooldown=0,
+            min_lr=0
         )
     ]
 

@@ -1,6 +1,7 @@
 model_file = "model/model.h5"
 
 audio_dir = "data/audio/"
+aug_dir = "data/audio_augmented/"
 val_dir = "data/validation/"
 
 x_path = "data/x_train.npy"
@@ -14,12 +15,13 @@ out_folder = "data/generated/"
 
 #training settings
 num_classes = 10
-learning_rate = 1e-3
+learning_rate = 1e-1
 decay = 1e-6
 momentum = 0.9
 epochs = 250
-batch_size = 16
+batch_size = 64
 patience = 10
+lr_patience = 5
 
 #spectrogram settings
 imwidth = 450
