@@ -220,6 +220,39 @@ def VGG19_Untrained(num_classes, input_shape):
 
     return model
 
+
+def ResNet18(num_classes, input_shape):
+    from classification_models.tfkeras import Classifiers
+    from tensorflow.keras import layers, Model
+
+    ResNet18, _ = Classifiers.get('resnet18')
+    base_model = ResNet18(input_shape=input_shape, include_top=False)
+    x = layers.GlobalAveragePooling2D()(base_model.output)
+    output = layers.Dense(num_classes, activation='softmax')(x)
+    return Model(inputs=[base_model.input], outputs=[output])
+
+
+def ResNet34(num_classes, input_shape):
+    from classification_models.tfkeras import Classifiers
+    from tensorflow.keras import layers, Model
+
+    ResNet34, _ = Classifiers.get('resnet34')
+    base_model = ResNet34(input_shape=input_shape, include_top=False)
+    x = layers.GlobalAveragePooling2D()(base_model.output)
+    output = layers.Dense(num_classes, activation='softmax')(x)
+    return Model(inputs=[base_model.input], outputs=[output])
+
+
+def ResNet50(num_classes, input_shape):
+    from classification_models.tfkeras import Classifiers
+    from tensorflow.keras import layers, Model
+
+    resnet50, _ = Classifiers.get('resnet50')
+    base_model = resnet50(input_shape=input_shape, include_top=False)
+    x = layers.GlobalAveragePooling2D()(base_model.output)
+    output = layers.Dense(num_classes, activation='softmax')(x)
+    return Model(inputs=[base_model.input], outputs=[output])
+
 def ResNet50V2(num_classes, input_shape):
     from tensorflow.keras import applications, layers, Model
     model = applications.ResNet50V2(
@@ -247,18 +280,9 @@ def ResNet101V2(num_classes, input_shape):
         classifier_activation="softmax"
     )
     out = layers.Dense(num_classes, activation="softmax")
-
     return Model(inputs=model.input, outputs=out(model.output))
 
-def ResNet18(num_classes, input_shape):
-    from classification_models.tfkeras import Classifiers
-    from tensorflow.keras import layers, Model
 
-    ResNet18, _ = Classifiers.get('resnet18')
-    base_model = ResNet18(input_shape=input_shape, include_top=False)
-    x = layers.GlobalAveragePooling2D()(base_model.output)
-    output = layers.Dense(num_classes, activation='softmax')(x)
-    return Model(inputs=[base_model.input], outputs=[output])
 
 
 def InceptionV3(num_classes, input_shape):
