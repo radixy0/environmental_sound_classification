@@ -46,10 +46,10 @@ def main():
     assert not np.any(np.isnan(x_train))
     assert not np.any(np.isnan(x_val))
 
-    model = model_architecture.ResNet50(10, input_shape)
+    model = model_architecture.ResNet34(10, input_shape)
     sgd = SGD(lr=settings.learning_rate, decay=settings.decay, momentum=settings.momentum)
     adam = keras.optimizers.Adam(learning_rate=settings.learning_rate)
-    model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
 
     log_dir = "logs/fit/" + model.name + "_" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
@@ -63,13 +63,13 @@ def main():
         ),
         keras.callbacks.ReduceLROnPlateau(
             monitor="val_loss",
-            factor=0.1,
+            factor=0.5,
             patience=settings.lr_patience,
             verbose=1,
             mode="auto",
             min_delta=0.0001,
             cooldown=0,
-            min_lr=0
+            min_lr=1e-6
         )
     ]
 

@@ -11,11 +11,11 @@ def main():
     print("include augmented: ", aug)
 
     file_list = [f for f in os.listdir(settings.audio_dir) if '.wav' in f]
+
     if(aug):
-        file_list += [f for f in os.listdir(settings.aug_dir)]
+        file_list += [f for f in os.listdir(settings.aug_dir) if '.wav' in f]
 
     file_list.sort()
-
 
     x_train = np.zeros((len(file_list), settings.imwidth, settings.imheight), dtype=np.float64)
     y_train = np.zeros(len(file_list))
@@ -25,18 +25,21 @@ def main():
         # get label
         split = f.split("-")
         y_train[i] = int(split[1])
-        # get spectrogram
+
+        filedir = settings.audio_dir
+        if('aug' in f):
+            filedir = settings.aug_dir
+
+        # get spectrogram from either audio dir or aug dir
         try:
-            spectrogram = getSpectrogram(settings.audio_dir + f)
+            spectrogram = getSpectrogram(filedir + f)
         except ValueError as e:
-            print("\nerror reading file: ", settings.audio_dir + f)
+            print("\nerror reading file: ", filedir + f)
             print(e)
             continue
 
         normgram = normalizeSpectrogram(spectrogram)
         x_train[i] = normgram
-
-
 
     np.save(settings.x_path, x_train)
     np.save(settings.y_path, y_train)

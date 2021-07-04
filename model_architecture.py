@@ -229,7 +229,7 @@ def ResNet18(num_classes, input_shape):
     base_model = ResNet18(input_shape=input_shape, include_top=False)
     x = layers.GlobalAveragePooling2D()(base_model.output)
     output = layers.Dense(num_classes, activation='softmax')(x)
-    return Model(inputs=[base_model.input], outputs=[output])
+    return Model(name="ResNet18",inputs=[base_model.input], outputs=[output])
 
 
 def ResNet34(num_classes, input_shape):
@@ -240,7 +240,7 @@ def ResNet34(num_classes, input_shape):
     base_model = ResNet34(input_shape=input_shape, include_top=False)
     x = layers.GlobalAveragePooling2D()(base_model.output)
     output = layers.Dense(num_classes, activation='softmax')(x)
-    return Model(inputs=[base_model.input], outputs=[output])
+    return Model(name="ResNet34",inputs=[base_model.input], outputs=[output])
 
 
 def ResNet50(num_classes, input_shape):
@@ -251,7 +251,7 @@ def ResNet50(num_classes, input_shape):
     base_model = resnet50(input_shape=input_shape, include_top=False)
     x = layers.GlobalAveragePooling2D()(base_model.output)
     output = layers.Dense(num_classes, activation='softmax')(x)
-    return Model(inputs=[base_model.input], outputs=[output])
+    return Model(name="ResNet50", inputs=[base_model.input], outputs=[output])
 
 def ResNet50V2(num_classes, input_shape):
     from tensorflow.keras import applications, layers, Model
@@ -266,7 +266,7 @@ def ResNet50V2(num_classes, input_shape):
     )
     out = layers.Dense(num_classes, activation="softmax")
 
-    return Model(inputs=model.input, outputs=out(model.output))
+    return Model(name="ResNet50V2", inputs=model.input, outputs=out(model.output))
 
 def ResNet101V2(num_classes, input_shape):
     from tensorflow.keras import applications, layers, Model
@@ -280,7 +280,7 @@ def ResNet101V2(num_classes, input_shape):
         classifier_activation="softmax"
     )
     out = layers.Dense(num_classes, activation="softmax")
-    return Model(inputs=model.input, outputs=out(model.output))
+    return Model(name="ResNet101V2", inputs=model.input, outputs=out(model.output))
 
 
 
@@ -297,7 +297,7 @@ def InceptionV3(num_classes, input_shape):
         classifier_activation="softmax"
     )
     out=layers.Dense(num_classes, activation="softmax")
-    return Model(inputs=model.input, outputs=out(model.output))
+    return Model(name="InceptionV3",inputs=model.input, outputs=out(model.output))
 
 def model_paper(num_classes, input_shape):
     from tensorflow.keras.layers import Input, BatchNormalization, Activation, Conv2D, MaxPooling2D, Flatten, Dropout, Dense
@@ -357,7 +357,7 @@ def model_paper(num_classes, input_shape):
                 activation='softmax',
                 name='prediction')(spec_x)
 
-    model = Model(inputs=spec_start, outputs=out)
+    model = Model(name="Model from Paper",inputs=spec_start, outputs=out)
 
     return model
 
