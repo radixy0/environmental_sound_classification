@@ -2,20 +2,16 @@ model_file = "model/model.h5"
 
 audio_dir = "data/audio/"
 aug_dir = "data/audio_augmented/"
-val_dir = "data/validation/"
 
 x_path = "data/x_train.npy"
 y_path = "data/y_train.npy"
 
-x_val_path = "data/x_val.npy"
-y_val_path = "data/y_val.npy"
-
-data_folder = "data/validation/"
+data_folder = "data/test/"
 out_folder = "data/generated/"
 
 #training settings
 num_classes = 10
-learning_rate = 1e-3
+learning_rate = 1e-2
 decay = 1e-6
 momentum = 0.9
 epochs = 250

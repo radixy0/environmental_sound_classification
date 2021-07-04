@@ -44,31 +44,6 @@ def main():
     np.save(settings.x_path, x_train)
     np.save(settings.y_path, y_train)
 
-    # validation files
-    file_list = [f for f in os.listdir(settings.val_dir) if '.wav' in f]
-    file_list.sort()
-
-    x_val = np.zeros((len(file_list), settings.imwidth, settings.imheight), dtype=np.float64)
-    y_val = np.zeros(len(file_list))
-
-    print("preparing validation files..")
-    for i, f in enumerate(tqdm(file_list)):
-        # get label
-        split = f.split("-")
-        y_val[i] = int(split[1])
-        # get spectrogram
-        try:
-            spectrogram = getSpectrogram(settings.val_dir + f)
-        except ValueError as e:
-            print("\nvalueerror reading file: ", settings.val_dir + f)
-            continue
-
-        normgram = normalizeSpectrogram(spectrogram)
-        x_val[i] = normgram
-
-    np.save(settings.x_val_path, x_val)
-    np.save(settings.y_val_path, y_val)
-
 
 if __name__ == "__main__":
     if(len(sys.argv) > 1):
