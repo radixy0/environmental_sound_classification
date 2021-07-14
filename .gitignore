@@ -12,6 +12,8 @@ model/
 ls7-updater/
 *.bat
 logs/
+logs_old/
+results.csv
 
 #PyCharm
 .idea/

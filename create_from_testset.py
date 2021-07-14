@@ -10,12 +10,40 @@ import settings
 def generate(n):
     for i in range(n):
         data=[]
-        print("working on {}".format(i))
+        print("working on {}".format(i+1))
         files = []
         for j in range(settings.sounds_per_file):
             files.append(random.choice(os.listdir(settings.data_folder)))
         print(files)
         empty = np.zeros((settings.file_len_seconds * settings.sr))
+
+        #put noise
+        birds, _ = librosa.load(settings.background_folder + "birds.wav", sr=settings.sr, mono=True)
+        cars, _ = librosa.load(settings.background_folder + "cars.wav", sr=settings.sr, mono=True)
+
+        birds=librosa.util.normalize(birds)
+        cars=librosa.util.normalize(cars)
+
+        #fill all of empty with birds and cars
+        i_birds = random.randrange(0, len(birds))
+        i_cars = random.randrange(0, len(cars))
+
+        for k in range(len(empty)):
+            empty[k] += birds[i_birds]
+            empty[k] += cars[i_cars]
+            empty[k] *= settings.background_loudness
+
+            i_birds+=1
+            if(i_birds==len(birds)):
+                i_birds=0
+
+            i_cars+=1
+            if(i_cars == len(cars)):
+                i_cars=0
+
+
+        # put files from testset
+
         for file in files:
             y, _ = librosa.load(settings.data_folder + file, sr=settings.sr, mono=True)
             # select random spot
@@ -39,13 +67,10 @@ def generate(n):
 
             data.append([num_class, start_copy, start])
 
-        # noise
-        noise = np.random.normal(0, .01, empty.shape)
-        final = empty + noise
 
         #filename
-        filename=settings.out_folder+"gen_"+str(n)
-        soundfile.write(filename+".wav", final, settings.sr)
+        filename=settings.out_folder+"background_"+str(settings.background_loudness)+"_gen_"+str(i)
+        soundfile.write(filename+".wav", empty, settings.sr)
 
         # generate dataframe and write to csv
         df = pd.DataFrame(data, columns=['Class_ID', 'From', 'To'])
@@ -54,10 +79,6 @@ def generate(n):
 
 
 if __name__ == '__main__':
-    # debug:
-    generate(1)
-    sys.exit()
-
     answered = False
     while not answered:
         n = input("how many files? ")

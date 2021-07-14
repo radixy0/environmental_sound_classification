@@ -2,7 +2,7 @@ import librosa
 import sys
 import os
 import settings
-from utils import getSpectrogramRaw
+from utils import getSpectrogram
 import numpy as np
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -22,10 +22,10 @@ def checkfile(file):
     # generate spectrograms
     specs = []
     for s in slices:
-        normgram = getSpectrogramRaw(s)
+        normgram = getSpectrogram(s)
         specs.append(normgram)
 
-    model = keras.models.load_model("model/model.h5")
+    model = keras.models.load_model("model/model_resnet18.h5")
     results = []
     for index, spectrogram in enumerate(specs):
         results.append([model.predict(spectrogram), index * settings.window_size * settings.sr,

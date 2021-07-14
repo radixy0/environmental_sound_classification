@@ -152,19 +152,16 @@ def VGG16_Untrained(num_classes, input_shape):
     return model
 
 
-def VGG16_Pretrained(num_classes, input_shape):
-    print("pretrained vgg16")
+def VGG16(num_classes, input_shape):
+    print("vgg16")
     from tensorflow.keras.applications.vgg16 import VGG16
     from tensorflow.keras.layers import Flatten, Dense
     from tensorflow.keras.models import Model
 
-    model = VGG16(weights='imagenet', include_top=False, input_shape=input_shape)
-
-    flatten = Flatten()
-    new_layer2 = Dense(num_classes, activation='softmax', name='my_dense_2')
-
+    model = VGG16(weights=None, include_top=False, input_shape=input_shape)
     inp2 = model.input
-    out2 = new_layer2(flatten(model.output))
+    out2 = Flatten()(model.output)
+    out2 = Dense(num_classes, activation='softmax', name='my_dense_2')(out2)
 
     model2 = Model(inp2, out2)
 
