@@ -60,7 +60,7 @@ def getSpectrogram(file):
     gray = np.dot(imarray[..., :3], [0.299, 0.587, 0.114])
     return gray
 
-def getSpectrogramRaw(data):
+def getSpectrogramRaw(data, rate):
     plt.ioff()
     mpl.use('Agg')  # to prevent weird memory leak of mpl
 
@@ -78,9 +78,8 @@ def getSpectrogramRaw(data):
     # plt.clf()
     plt.close()
     gray = np.dot(imarray[..., :3], [0.299, 0.587, 0.114])
-    normgram = (gray - gray.min()) / (gray.max() - gray.min())
 
-    return normgram
+    return gray
 
 
 def normalizeSpectrogram(array):

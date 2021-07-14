@@ -2,16 +2,12 @@ import pandas as pd
 import check_wav
 import settings
 import os
+import numpy as np
 
 
 
 def max_index(list):
-    highest_index = 0
-    for index, item in enumerate(list):
-        if (list[index] > list[highest_index]):
-            highest_index = index
-
-    return highest_index
+    return np.argmax(list)
 
 
 def compare(wavfile, csvfile):
@@ -21,22 +17,32 @@ def compare(wavfile, csvfile):
     # get results from file
     results = check_wav.checkfile(wavfile)
     # transform, change first entry of result into predicted class instead of probabilities
+    results_without_probs = []
+
     for [probs, start, end] in results:
-        probs = max_index(probs)
+        chosen_class = -1
+        if(np.max(probs) > 0.9):
+            chosen_class = max_index(probs)
+
+        results_without_probs.append([chosen_class, start, end])
 
     # compare
     hit_count = 0
     miss_count = 0
-    for [result, start, end] in results:
+    for [result, start, end] in results_without_probs:
+        #if no hit (class = -1) then continue
+        if(result == -1):
+            continue
+
         # check if similar in df
         candidates = df.loc[(df['Class_ID'] == result) & (df['From'] <= start) & (df['To'] >= start)]
         candidates2 = df.loc[(df['Class_ID'] == result) & (df['From'] <= end) & (df['To'] >= end)]
         if not candidates.empty or not candidates2.empty:
             hit_count += 1
-            print("correctly found ", result, " between ", start / check_wav.sr, end / check_wav.sr)
+            print("correctly found ", result, " between ", start / settings.sr, end / settings.sr)
         else:
             miss_count+=1
-            print("false positive ", result, "between ", start/check_wav.sr, end/check_wav.sr)
+            print("false positive ", result, "between ", start/settings.sr, end/settings.sr)
 
     return hit_count, miss_count
 
@@ -54,15 +60,16 @@ def main():
             to_analyze.append((settings.out_folder + filename+".wav", settings.out_folder + filename+".csv"))
 
     # load results.csv dataframe
-    df = pd.read_csv('results.csv')
+    df = pd.read_csv('results.csv', index_col=0)
     # compare and add results to results.csv
-
     for wavfile, csvfile in to_analyze:
         hc, mc = compare(wavfile, csvfile)
         bg_noise = wavfile.split('_')[1]
-        df.append(bg_noise, hc, mc)
+        row_dict = {'bg_noise_rate':bg_noise,'hit_rate':hc,'miss_rate':mc}
+        df.loc[len(df.index)] = row_dict
 
-    df.to_csv('results.csv', mode='a', header=False)
+
+    df.to_csv('results.csv')
 
 
 if (__name__ == "__main__"):

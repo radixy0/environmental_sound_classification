@@ -73,7 +73,7 @@ def generate(n):
         soundfile.write(filename+".wav", empty, settings.sr)
 
         # generate dataframe and write to csv
-        df = pd.DataFrame(data, columns=['Class_ID', 'From', 'To'])
+        df = pd.DataFrame(data, columns=settings.df_columns)
         df.index.name="index"
         df.to_csv(filename+".csv")
 
