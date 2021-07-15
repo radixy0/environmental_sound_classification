@@ -3,7 +3,7 @@ import check_wav
 import settings
 import os
 import numpy as np
-
+import utils
 
 
 def max_index(list):
@@ -39,10 +39,10 @@ def compare(wavfile, csvfile):
         candidates2 = df.loc[(df['Class_ID'] == result) & (df['From'] <= end) & (df['To'] >= end)]
         if not candidates.empty or not candidates2.empty:
             hit_count += 1
-            print("correctly found ", result, " between ", start / settings.sr, end / settings.sr)
+            print("correctly found ", utils.toHumanLabels[result], " between ", start / settings.sr, end / settings.sr)
         else:
             miss_count+=1
-            print("false positive ", result, "between ", start/settings.sr, end/settings.sr)
+            print("false positive ", utils.toHumanLabels[result], "between ", start/settings.sr, end/settings.sr)
 
     return hit_count, miss_count
 

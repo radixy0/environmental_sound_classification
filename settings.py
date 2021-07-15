@@ -33,7 +33,7 @@ sr=22050
 window_size=4 # in seconds
 sounds_per_file = 20
 file_len_seconds = 120
-background_loudness=0.001 #in percent
+background_loudness=0.7 #in percent
 
 #dataframe settings
 df_columns = ['Class_ID', 'From', 'To']
