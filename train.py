@@ -33,9 +33,9 @@ def main():
 
     assert not np.any(np.isnan(data))
 
-    x_train, x_val, y_train, y_val = train_test_split(data, labels, test_size=0.1)
+    x_train, x_val, y_train, y_val = train_test_split(data, labels, test_size=0.25)
 
-    model = model_architecture.VGG16_Untrained(10, input_shape)
+    model = model_architecture.ResNet50(10, input_shape)
     sgd = SGD(lr=settings.learning_rate) #, decay=settings.decay, momentum=settings.momentum)
     adam = keras.optimizers.Adam(learning_rate=settings.learning_rate)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])

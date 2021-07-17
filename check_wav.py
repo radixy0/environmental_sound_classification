@@ -28,9 +28,10 @@ def checkfile(file):
         specs.append(normgram)
 
     model = utils.preloaded_model
-    if not model is None:
+    if model is None:
         print("loading model..")
         model = keras.models.load_model("model/model_resnet50.h5")
+        utils.preloaded_model = model
 
     results = []
     for index, spectrogram in enumerate(specs):

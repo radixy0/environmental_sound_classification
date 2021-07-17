@@ -18,20 +18,22 @@ for i in available_bg_types:
     bg_hitrate_lst.append((i, avg))
 
 #make zipped list of bg noise, missrate avg
-bg_missrate_lst = []
+false_positives = []
 for i in available_bg_types:
     values = df.loc[df['bg_noise_rate'] == i, 'miss_rate']
     avg = values.mean()
-    avg = avg/settings.sounds_per_file
-    bg_missrate_lst.append((i, avg))
+    #avg = avg/settings.sounds_per_file
+    false_positives.append((i, avg))
 
 #sort, just in case
 bg_hitrate_lst.sort(key=lambda tup: tup[0])
-bg_missrate_lst.sort(key=lambda tup: tup[0])
+false_positives.sort(key=lambda tup: tup[0])
 
 #plot
-plt.plot(*zip(*bg_hitrate_lst), label="Hits")
-plt.plot(*zip(*bg_missrate_lst), label="Misses")
+fig, axs = plt.subplots(2)
+axs[0].plot(*zip(*bg_hitrate_lst),'tab:green', label="Hits")
+axs[1].plot(*zip(*false_positives), 'tab:red', label="Misses")
 plt.xlabel("background noise loudness in %")
-plt.legend()
+axs[0].legend()
+axs[1].legend()
 plt.show()

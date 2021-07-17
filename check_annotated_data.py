@@ -21,7 +21,7 @@ def compare(wavfile, csvfile):
 
     for [probs, start, end] in results:
         chosen_class = -1
-        if(np.max(probs) > 0.97):
+        if(np.max(probs) > 0.7):
             chosen_class = max_index(probs)
 
         results_without_probs.append([chosen_class, start, end])
