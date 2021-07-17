@@ -8,6 +8,7 @@ import numpy as np
 
 currDirectory = pathlib.Path(__file__).parent.absolute()
 USE_CORES = -1
+preloaded_model=None
 
 
 def chunks(lst, n):
@@ -89,7 +90,12 @@ def normalizeSpectrogram(array):
 def silenceTensorflow(level: int):
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = str(level)  # or any {'0', '1', '2'}
 
-
+def isFloat(string):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
 
 toHumanLabels = {
     0: "air_conditioner",

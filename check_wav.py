@@ -27,7 +27,11 @@ def checkfile(file):
         normgram = utils.normalizeSpectrogram(graygram)
         specs.append(normgram)
 
-    model = keras.models.load_model("model/model_resnet18.h5")
+    model = utils.preloaded_model
+    if not model is None:
+        print("loading model..")
+        model = keras.models.load_model("model/model_resnet50.h5")
+
     results = []
     for index, spectrogram in enumerate(specs):
         spectrogram = spectrogram.reshape((1, spectrogram.shape[0], spectrogram.shape[1], 1))

@@ -1,5 +1,5 @@
 import os
-import sys
+import utils
 import random
 import numpy as np
 import librosa
@@ -85,4 +85,15 @@ if __name__ == '__main__':
         if n.isnumeric():
             answered = True
 
-    generate(int(n))
+    answered = False
+    while not answered:
+        upper_bound = input("bg_loudness from 0.01 to? ")
+        if utils.isFloat(upper_bound):
+            answered = True
+
+    upper_bound = float(upper_bound)
+
+
+    for i in range(1, int(upper_bound*100), 1):
+        settings.background_loudness = i / 100
+        generate(int(n))

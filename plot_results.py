@@ -1,33 +1,33 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import settings
 
 df = pd.read_csv("results.csv")
 
-#get x,y with bg, hitrate
-bg_hitrate = df[['bg_noise_rate', 'hit_rate']]
+#make list of available bg noises
+bg_column = df['bg_noise_rate']
+bg_types = bg_column.drop_duplicates()
+available_bg_types = bg_types.tolist()
+
+#make zipped list of bg noise, hitrate avg
 bg_hitrate_lst = []
-#average for each bg range
-for i in range(1,11):
-    j = i/10
-    values = bg_hitrate[bg_hitrate['bg_noise_rate'] == j]
-    y_val = values['hit_rate'].mean() / 20
-    x_val = j
-    bg_hitrate_lst.append((x_val, y_val))
+for i in available_bg_types:
+    values = df.loc[df['bg_noise_rate'] == i, 'hit_rate']
+    avg = values.mean()
+    avg = avg/settings.sounds_per_file
+    bg_hitrate_lst.append((i, avg))
 
-print(bg_hitrate_lst)
-#get x,y with bg, missrate
-bg_missrate = df[['bg_noise_rate', 'miss_rate']]
+#make zipped list of bg noise, missrate avg
 bg_missrate_lst = []
+for i in available_bg_types:
+    values = df.loc[df['bg_noise_rate'] == i, 'miss_rate']
+    avg = values.mean()
+    avg = avg/settings.sounds_per_file
+    bg_missrate_lst.append((i, avg))
 
-#average
-for i in range(1,11):
-    j = i/10
-    values = bg_missrate[bg_missrate['bg_noise_rate'] == j]
-    y_val = values['miss_rate'].mean() / 20
-    x_val = j
-    bg_missrate_lst.append((x_val, y_val))
-
-print(bg_missrate_lst)
+#sort, just in case
+bg_hitrate_lst.sort(key=lambda tup: tup[0])
+bg_missrate_lst.sort(key=lambda tup: tup[0])
 
 #plot
 plt.plot(*zip(*bg_hitrate_lst), label="Hits")

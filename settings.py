@@ -31,7 +31,7 @@ noverlap = 128
 chunk_size = 22050
 sr=22050
 window_size=4 # in seconds
-sounds_per_file = 20
+sounds_per_file = 10
 file_len_seconds = 120
 background_loudness=0.7 #in percent
 
