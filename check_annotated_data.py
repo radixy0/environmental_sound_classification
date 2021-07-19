@@ -21,15 +21,16 @@ def compare(wavfile, csvfile):
 
     for [probs, start, end] in results:
         chosen_class = -1
-        if(np.max(probs) > 0.7):
+        confidence = np.max(probs)
+        if(confidence >= 0.99):
             chosen_class = max_index(probs)
 
-        results_without_probs.append([chosen_class, start, end])
+        results_without_probs.append([chosen_class, start, end, confidence])
 
     # compare
     hit_count = 0
     miss_count = 0
-    for [result, start, end] in results_without_probs:
+    for [result, start, end, confidence] in results_without_probs:
         #if no hit (class = -1) then continue
         if(result == -1):
             continue
@@ -39,10 +40,10 @@ def compare(wavfile, csvfile):
         candidates2 = df.loc[(df['Class_ID'] == result) & (df['From'] <= end) & (df['To'] >= end)]
         if not candidates.empty or not candidates2.empty:
             hit_count += 1
-            print("correctly found ", utils.toHumanLabels[result], " between ", start / settings.sr, end / settings.sr)
+            print("correctly found ", utils.toHumanLabels[result], " between ", start / settings.sr, end / settings.sr, "confidence: ", round(confidence,4))
         else:
             miss_count+=1
-            print("false positive ", utils.toHumanLabels[result], "between ", start/settings.sr, end/settings.sr)
+            print("false positive ", utils.toHumanLabels[result], "between ", start/settings.sr, end/settings.sr, "confidence: ", round(confidence,4))
 
     return hit_count, miss_count
 

@@ -38,7 +38,7 @@ def main():
     model = model_architecture.ResNet50(10, input_shape)
     sgd = SGD(lr=settings.learning_rate) #, decay=settings.decay, momentum=settings.momentum)
     adam = keras.optimizers.Adam(learning_rate=settings.learning_rate)
-    model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
 
     log_dir = "logs/fit/" + model.name + "_" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
@@ -50,16 +50,16 @@ def main():
             save_weights_only=False, mode='auto', save_freq='epoch',
             options=None
         ),
-        keras.callbacks.ReduceLROnPlateau(
-            monitor="val_loss",
-            factor=0.5,
-            patience=settings.lr_patience,
-            verbose=1,
-            mode="auto",
-            min_delta=0.0001,
-            cooldown=0,
-            min_lr=1e-6
-        )
+        #keras.callbacks.ReduceLROnPlateau(
+        #    monitor="val_loss",
+        #    factor=0.5,
+        #    patience=settings.lr_patience,
+        #    verbose=1,
+        #    mode="auto",
+        #    min_delta=0.0001,
+        #    cooldown=0,
+        #    min_lr=1e-6
+        #)
     ]
 
     history = model.fit(x_train, y_train, epochs=settings.epochs, batch_size=settings.batch_size, validation_data=(x_val, y_val),
