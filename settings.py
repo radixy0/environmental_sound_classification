@@ -13,7 +13,7 @@ out_folder = "data/generated/"
 
 #training settings
 num_classes = 10
-learning_rate = 1e-3
+learning_rate = 1e-4
 decay = 1e-6
 momentum = 0.9
 epochs = 800
@@ -31,7 +31,7 @@ noverlap = 128
 chunk_size = 22050
 sr=22050
 window_size=4 # in seconds
-sounds_per_file = 10
+sounds_per_file = 20
 file_len_seconds = 120
 background_loudness=0.7 #in percent
 

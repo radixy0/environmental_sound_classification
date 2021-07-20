@@ -35,7 +35,7 @@ def main():
 
     x_train, x_val, y_train, y_val = train_test_split(data, labels, test_size=0.25)
 
-    model = model_architecture.ResNet50(10, input_shape)
+    model = model_architecture.ResNet18(10, input_shape)
     sgd = SGD(lr=settings.learning_rate) #, decay=settings.decay, momentum=settings.momentum)
     adam = keras.optimizers.Adam(learning_rate=settings.learning_rate)
     model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
@@ -44,7 +44,7 @@ def main():
 
     callbacks=[
         keras.callbacks.EarlyStopping(patience=settings.patience, verbose=1),
-        keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1),
+        keras.callbacks.TensorBoard(log_dir=log_dir),
         keras.callbacks.ModelCheckpoint(
             "model/model.h5", monitor='val_loss', verbose=1, save_best_only=True,
             save_weights_only=False, mode='auto', save_freq='epoch',

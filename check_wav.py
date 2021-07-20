@@ -30,7 +30,7 @@ def checkfile(file):
     model = utils.preloaded_model
     if model is None:
         print("loading model..")
-        model = keras.models.load_model("model/model_resnet50.h5")
+        model = keras.models.load_model("model/model.h5")
         utils.preloaded_model = model
 
     results = []
